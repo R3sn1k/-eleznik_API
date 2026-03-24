@@ -1,0 +1,25 @@
+{
+  "name": "zeleznik-api",
+  "version": "1.0.0",
+  "description": "Primer API-ja za Postman in JWT nalogo",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "start:3005": "powershell -Command \"$env:PORT=3005; node src/server.js\"",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "api",
+    "jwt",
+    "postman",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
