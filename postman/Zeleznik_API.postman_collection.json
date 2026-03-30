@@ -2,12 +2,33 @@
   "info": {
     "name": "Zeleznik API",
     "_postman_id": "6e3d0f9d-4f8f-4c47-9e27-b5f81ed42ce4",
-    "description": "Postman collection za register, login, JWT in weather favorites.",
+    "description": "Postman collection za GET, CREATE, UPDATE in DELETE strukturo.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Home",
+      "name": "GET Overview",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Vrne GET/CREATE/UPDATE/DELETE strukturo', function () {",
+              "  pm.expect(json.projectStructure).to.be.an('object');",
+              "  pm.expect(json.projectStructure.GET).to.eql('/API/GET');",
+              "  pm.expect(json.projectStructure.CREATE).to.eql('/API/CREATE');",
+              "  pm.expect(json.projectStructure.UPDATE).to.eql('/API/UPDATE');",
+              "  pm.expect(json.projectStructure.DELETE).to.eql('/API/DELETE');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
@@ -23,7 +44,74 @@
       }
     },
     {
-      "name": "Register",
+      "name": "GET Home",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Vrne opis GET dela', function () {",
+              "  pm.expect(json.message).to.be.a('string');",
+              "  pm.expect(json.info).to.be.a('string');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/API/GET/home",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "API",
+            "GET",
+            "home"
+          ]
+        }
+      }
+    },
+    {
+      "name": "CREATE Register",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const unique = Date.now();",
+              "pm.collectionVariables.set('testUsername', `janez_${unique}`);",
+              "pm.collectionVariables.set('testEmail', `janez_${unique}@test.com`);",
+              "pm.collectionVariables.set('testPassword', 'geslo123');"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Registracija vrne user podatke', function () {",
+              "  pm.expect(json.user).to.be.an('object');",
+              "  pm.expect(json.user.email).to.eql(pm.collectionVariables.get('testEmail'));",
+              "  pm.expect(json.user.username).to.eql(pm.collectionVariables.get('testUsername'));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
@@ -34,29 +122,35 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"username\": \"janez\",\n  \"email\": \"janez@test.com\",\n  \"password\": \"geslo123\"\n}"
+          "raw": "{\n  \"username\": \"{{testUsername}}\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}"
         },
         "url": {
-          "raw": "{{baseUrl}}/api/auth/register",
+          "raw": "{{baseUrl}}/API/CREATE/register",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "api",
-            "auth",
+            "API",
+            "CREATE",
             "register"
           ]
         }
       }
     },
     {
-      "name": "Login",
+      "name": "CREATE Login",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
               "const json = pm.response.json();",
+              "pm.test('Login vrne token', function () {",
+              "  pm.expect(json.token).to.be.a('string').and.not.empty;",
+              "});",
               "if (json.token) {",
               "  pm.collectionVariables.set('token', json.token);",
               "}"
@@ -75,23 +169,41 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"janez@test.com\",\n  \"password\": \"geslo123\"\n}"
+          "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}"
         },
         "url": {
-          "raw": "{{baseUrl}}/api/auth/login",
+          "raw": "{{baseUrl}}/API/CREATE/login",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "api",
-            "auth",
+            "API",
+            "CREATE",
             "login"
           ]
         }
       }
     },
     {
-      "name": "My Profile",
+      "name": "GET Profile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Profil vrne prijavljenega uporabnika', function () {",
+              "  pm.expect(json.user).to.be.an('object');",
+              "  pm.expect(json.user.email).to.eql(pm.collectionVariables.get('testEmail'));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [
@@ -101,20 +213,38 @@
           }
         ],
         "url": {
-          "raw": "{{baseUrl}}/api/users/me",
+          "raw": "{{baseUrl}}/API/GET/profile",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "api",
-            "users",
-            "me"
+            "API",
+            "GET",
+            "profile"
           ]
         }
       }
     },
     {
-      "name": "All Weather",
+      "name": "GET All Weather",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Vrne seznam vremena', function () {",
+              "  pm.expect(json.count).to.be.a('number');",
+              "  pm.expect(json.data).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [
@@ -124,19 +254,38 @@
           }
         ],
         "url": {
-          "raw": "{{baseUrl}}/api/weather",
+          "raw": "{{baseUrl}}/API/GET/weather",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "api",
+            "API",
+            "GET",
             "weather"
           ]
         }
       }
     },
     {
-      "name": "Favorite Weather Places",
+      "name": "GET Favorite Weather Places",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Vrne favorite kraje', function () {",
+              "  pm.expect(json.count).to.be.a('number');",
+              "  pm.expect(json.data).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [
@@ -146,12 +295,13 @@
           }
         ],
         "url": {
-          "raw": "{{baseUrl}}/api/weather/favorites",
+          "raw": "{{baseUrl}}/API/GET/weather/favorites",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "api",
+            "API",
+            "GET",
             "weather",
             "favorites"
           ]
@@ -159,7 +309,28 @@
       }
     },
     {
-      "name": "Create Weather Entry",
+      "name": "CREATE Weather",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Create weather vrne nov zapis', function () {",
+              "  pm.expect(json.data).to.be.an('object');",
+              "  pm.expect(json.data.city).to.eql('Ptuj');",
+              "});",
+              "if (json.data && json.data.id) {",
+              "  pm.collectionVariables.set('createdWeatherId', json.data.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
@@ -177,13 +348,148 @@
           "raw": "{\n  \"city\": \"Ptuj\",\n  \"country\": \"Slovenia\",\n  \"temperatureC\": 21,\n  \"condition\": \"Sunny\",\n  \"favorite\": true\n}"
         },
         "url": {
-          "raw": "{{baseUrl}}/api/weather",
+          "raw": "{{baseUrl}}/API/CREATE/weather",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "api",
+            "API",
+            "CREATE",
             "weather"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET Weather By Id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Vrne tocno ustvarjen zapis', function () {",
+              "  pm.expect(json.id).to.eql(Number(pm.collectionVariables.get('createdWeatherId')));",
+              "  pm.expect(json.city).to.be.a('string');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/API/GET/weather/{{createdWeatherId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "API",
+            "GET",
+            "weather",
+            "{{createdWeatherId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "UPDATE Weather",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Update spremeni zapis', function () {",
+              "  pm.expect(json.data.city).to.eql('Novo mesto');",
+              "  pm.expect(json.data.condition).to.eql('Windy');",
+              "  pm.expect(json.data.favorite).to.eql(false);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"city\": \"Novo mesto\",\n  \"country\": \"Slovenia\",\n  \"temperatureC\": 19,\n  \"condition\": \"Windy\",\n  \"favorite\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/API/UPDATE/weather/{{createdWeatherId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "API",
+            "UPDATE",
+            "weather",
+            "{{createdWeatherId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "DELETE Weather",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status je 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Delete vrne izbrisan zapis', function () {",
+              "  pm.expect(json.data.id).to.eql(Number(pm.collectionVariables.get('createdWeatherId')));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/API/DELETE/weather/{{createdWeatherId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "API",
+            "DELETE",
+            "weather",
+            "{{createdWeatherId}}"
           ]
         }
       }
@@ -196,6 +502,22 @@
     },
     {
       "key": "token",
+      "value": ""
+    },
+    {
+      "key": "testUsername",
+      "value": ""
+    },
+    {
+      "key": "testEmail",
+      "value": ""
+    },
+    {
+      "key": "testPassword",
+      "value": ""
+    },
+    {
+      "key": "createdWeatherId",
       "value": ""
     }
   ]

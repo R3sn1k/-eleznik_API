@@ -1,19 +1,18 @@
 # Zeleznik API
 
-Enostaven primer projekta za nalogo s `Postman` in `JWT` tokeni.
+API je preurejen tako, da je razdeljen po mapah in URL-jih:
 
-## Naloga, ki jo pokriva projekt
+- `GET`
+- `CREATE`
+- `UPDATE`
+- `DELETE`
 
-- prikaz obstojecega API-ja
-- `register`
-- `login`
-- JWT zascita
-- prikaz samo dolocenih podatkov iz API-ja
+Primer strukture URL-jev:
 
-Primer podatkov je narejen na temi vremena:
-
-- `GET /api/weather` vrne vse vremenske zapise
-- `GET /api/weather/favorites` vrne samo priljubljene kraje in samo izbrana polja
+- `http://localhost:3000/API/GET`
+- `http://localhost:3000/API/CREATE`
+- `http://localhost:3000/API/UPDATE`
+- `http://localhost:3000/API/DELETE`
 
 ## Zagon
 
@@ -22,9 +21,7 @@ npm install
 npm start
 ```
 
-API tece na `http://localhost:3000`.
-
-Ce je port `3000` zaseden, zazeni:
+Ce je port `3000` zaseden:
 
 ```bash
 $env:PORT=3005
@@ -33,103 +30,90 @@ npm start
 
 ## Endpointi
 
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/users/me`
-- `GET /api/weather`
-- `GET /api/weather/favorites`
-- `POST /api/weather`
+### GET
 
-## Kako pokazes nalogo v Postmanu
+- `GET /API/GET`
+- `GET /API/GET/home`
+- `GET /API/GET/profile`
+- `GET /API/GET/weather`
+- `GET /API/GET/weather/:id`
+- `GET /API/GET/weather/favorites`
 
-### 1. Uvozi kolekcijo
+### CREATE
 
-V mapi projekta je datoteka `postman/Zeleznik_API.postman_collection.json`.
+- `POST /API/CREATE/register`
+- `POST /API/CREATE/login`
+- `POST /API/CREATE/weather`
 
-V Postmanu klikni:
+### UPDATE
 
-`Import -> File -> izberi collection json`
+- `PUT /API/UPDATE/weather/:id`
 
-### 2. Pozeni streznik
+### DELETE
 
-V terminalu:
+- `DELETE /API/DELETE/weather/:id`
 
-```bash
-npm start
-```
+## Kaj pokazes v Postmanu
 
-### 3. Naredi register
+1. `POST /API/CREATE/register`
+2. `POST /API/CREATE/login`
+3. kopiras `token`
+4. `GET /API/GET/profile`
+5. `GET /API/GET/weather`
+6. `GET /API/GET/weather/favorites`
+7. `POST /API/CREATE/weather`
+8. `PUT /API/UPDATE/weather/1`
+9. `DELETE /API/DELETE/weather/1`
 
-V kolekciji odpri `Register` in poslji request.
+## Body primeri
 
-Primer body:
+### Register
 
 ```json
 {
   "username": "janez",
-  "email": "janez@test.com",
+  "email": "janez.nov@test.com",
   "password": "geslo123"
 }
 ```
 
-### 4. Naredi login
-
-Odpri `Login` in poslji request:
+### Login
 
 ```json
 {
-  "email": "janez@test.com",
+  "email": "janez.nov@test.com",
   "password": "geslo123"
 }
 ```
 
-Odgovor vrne `token`.
+### Create weather
 
-### 5. Uporabi JWT token
-
-Ta token das v header:
-
-```text
-Authorization: Bearer TVOJ_TOKEN
+```json
+{
+  "city": "Ptuj",
+  "country": "Slovenia",
+  "temperatureC": 21,
+  "condition": "Sunny",
+  "favorite": true
+}
 ```
 
-S tem potem delujeta:
+### Update weather
 
-- `GET /api/users/me`
-- `GET /api/weather`
-- `GET /api/weather/favorites`
-- `POST /api/weather`
+```json
+{
+  "city": "Novo mesto",
+  "country": "Slovenia",
+  "temperatureC": 19,
+  "condition": "Windy",
+  "favorite": false
+}
+```
 
-### 6. Pokazi selektivne podatke
+## Mape
 
-Najbolj pomemben endpoint za zadnji del naloge je:
-
-`GET /api/weather/favorites`
-
-Ta endpoint:
-
-- vrne samo kraje, kjer je `favorite = true`
-- ne vrne vseh polj iz baze
-- vrne samo `city`, `country`, `temperatureC`, `condition`
-
-To je tocno primer "prikazi samo dolocene podatke".
-
-## Kaj je JWT
-
-`JWT` pomeni `JSON Web Token`.
-
-Uporaba v tem projektu:
-
-1. uporabnik se registrira
-2. uporabnik se prijavi
-3. server vrne token
-4. ta token posljes pri zascitenih requestih
-5. server preveri, ali je token veljaven
-
-## Datoteke
-
-- `src/server.js` glavni API
-- `src/middleware/auth.js` preverjanje JWT tokena
-- `src/db.js` branje in pisanje lokalne baze
-- `data/db.json` testni podatki
-- `postman/Zeleznik_API.postman_collection.json` Postman kolekcija
+- `src/routes/API/GET`
+- `src/routes/API/CREATE`
+- `src/routes/API/UPDATE`
+- `src/routes/API/DELETE`
+- `postman/Zeleznik_API.postman_collection.json`

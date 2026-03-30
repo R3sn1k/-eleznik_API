@@ -13,6 +13,20 @@
       "email": "janez@test.com",
       "passwordHash": "$2a$10$aZwnp9h5cIva2SPGzFQ/KOTV/ZrdGsH./gv2Or5p8c.X15Mw6fTQy",
       "createdAt": "2026-03-24T08:02:24.732Z"
+    },
+    {
+      "id": 3,
+      "username": "janez_test",
+      "email": "janez_test_123@test.com",
+      "passwordHash": "$2a$10$069iaKvRsrROxCkhteJBsuxdY.TowmGCQiqpOqhMKYR6ZV5ZvcKXC",
+      "createdAt": "2026-03-30T11:41:34.040Z"
+    },
+    {
+      "id": 4,
+      "username": "janez_novi",
+      "email": "janez_novi_555@test.com",
+      "passwordHash": "$2a$10$0eD3Q/dYNUyj.RW2vYLYue1iLDt35Bcl8mNwiRgTJLvuXDM/Ln2X.",
+      "createdAt": "2026-03-30T11:53:31.829Z"
     }
   ],
   "weatherFavorites": [

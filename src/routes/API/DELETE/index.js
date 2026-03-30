@@ -1,0 +1,43 @@
+const express = require("express");
+const authMiddleware = require("../../../middleware/auth");
+const { readDb, writeDb } = require("../../../db");
+
+const router = express.Router();
+
+router.get("/", (req, res) => {
+  res.json({
+    message: "DELETE endpointi za Vreme API.",
+    endpoints: {
+      deleteWeather: "DELETE /API/DELETE/weather/:id",
+    },
+  });
+});
+
+router.delete("/weather/:id", authMiddleware, (req, res) => {
+  const weatherId = Number(req.params.id);
+
+  if (Number.isNaN(weatherId)) {
+    return res.status(400).json({
+      message: "ID mora biti stevilo.",
+    });
+  }
+
+  const db = readDb();
+  const entryIndex = db.weatherFavorites.findIndex((item) => item.id === weatherId);
+
+  if (entryIndex === -1) {
+    return res.status(404).json({
+      message: "Vremenski zapis ni bil najden.",
+    });
+  }
+
+  const [deletedEntry] = db.weatherFavorites.splice(entryIndex, 1);
+  writeDb(db);
+
+  return res.json({
+    message: "Vremenski zapis izbrisan.",
+    data: deletedEntry,
+  });
+});
+
+module.exports = router;
