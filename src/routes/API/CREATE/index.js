@@ -14,6 +14,7 @@ router.get("/", (req, res) => {
       register: "POST /API/CREATE/register",
       login: "POST /API/CREATE/login",
       createWeather: "POST /API/CREATE/weather",
+      addFavorite: "POST /API/CREATE/favorites",
     },
   });
 });
@@ -105,7 +106,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/weather", authMiddleware, (req, res) => {
-  const { city, country, temperatureC, condition, favorite } = req.body;
+  const { city, country, temperatureC, condition } = req.body;
 
   if (!city || !country || temperatureC === undefined || !condition) {
     return res.status(400).json({
@@ -122,7 +123,6 @@ router.post("/weather", authMiddleware, (req, res) => {
     country,
     temperatureC,
     condition,
-    favorite: Boolean(favorite),
     createdBy: req.user.email,
   };
 
@@ -132,6 +132,53 @@ router.post("/weather", authMiddleware, (req, res) => {
   return res.status(201).json({
     message: "Vremenski zapis ustvarjen.",
     data: newEntry,
+  });
+});
+
+router.post("/favorites", authMiddleware, (req, res) => {
+  const { weatherId } = req.body;
+  const parsedWeatherId = Number(weatherId);
+
+  if (Number.isNaN(parsedWeatherId)) {
+    return res.status(400).json({
+      message: "Polje weatherId je obvezno in mora biti stevilo.",
+    });
+  }
+
+  const db = readDb();
+  const weatherEntry = db.weatherFavorites.find((item) => item.id === parsedWeatherId);
+
+  if (!weatherEntry) {
+    return res.status(404).json({
+      message: "Vremenski zapis ni bil najden.",
+    });
+  }
+
+  const existingFavorite = db.favorites.find(
+    (item) =>
+      item.userEmail === req.user.email && item.weatherId === parsedWeatherId
+  );
+
+  if (existingFavorite) {
+    return res.status(409).json({
+      message: "Ta kraj je ze med priljubljenimi.",
+      data: existingFavorite,
+    });
+  }
+
+  const newFavorite = {
+    id: db.favorites.length ? Math.max(...db.favorites.map((item) => item.id)) + 1 : 1,
+    userEmail: req.user.email,
+    weatherId: parsedWeatherId,
+    createdAt: new Date().toISOString(),
+  };
+
+  db.favorites.push(newFavorite);
+  writeDb(db);
+
+  return res.status(201).json({
+    message: "Kraj dodan med priljubljene.",
+    data: newFavorite,
   });
 });
 

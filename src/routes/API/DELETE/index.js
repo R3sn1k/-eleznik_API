@@ -9,6 +9,7 @@ router.get("/", (req, res) => {
     message: "DELETE endpointi za Vreme API.",
     endpoints: {
       deleteWeather: "DELETE /API/DELETE/weather/:id",
+      deleteFavorite: "DELETE /API/DELETE/favorites/:id",
     },
   });
 });
@@ -32,11 +33,41 @@ router.delete("/weather/:id", authMiddleware, (req, res) => {
   }
 
   const [deletedEntry] = db.weatherFavorites.splice(entryIndex, 1);
+  db.favorites = db.favorites.filter((item) => item.weatherId !== weatherId);
   writeDb(db);
 
   return res.json({
     message: "Vremenski zapis izbrisan.",
     data: deletedEntry,
+  });
+});
+
+router.delete("/favorites/:id", authMiddleware, (req, res) => {
+  const favoriteId = Number(req.params.id);
+
+  if (Number.isNaN(favoriteId)) {
+    return res.status(400).json({
+      message: "ID mora biti stevilo.",
+    });
+  }
+
+  const db = readDb();
+  const favoriteIndex = db.favorites.findIndex(
+    (item) => item.id === favoriteId && item.userEmail === req.user.email
+  );
+
+  if (favoriteIndex === -1) {
+    return res.status(404).json({
+      message: "Priljubljeni kraj ni bil najden.",
+    });
+  }
+
+  const [deletedFavorite] = db.favorites.splice(favoriteIndex, 1);
+  writeDb(db);
+
+  return res.json({
+    message: "Priljubljeni kraj odstranjen.",
+    data: deletedFavorite,
   });
 });
 

@@ -27,6 +27,13 @@
       "email": "janez_novi_555@test.com",
       "passwordHash": "$2a$10$0eD3Q/dYNUyj.RW2vYLYue1iLDt35Bcl8mNwiRgTJLvuXDM/Ln2X.",
       "createdAt": "2026-03-30T11:53:31.829Z"
+    },
+    {
+      "id": 5,
+      "username": "janez_111",
+      "email": "janez_novi_111@test.com",
+      "passwordHash": "$2a$10$TFF/VqEx2SID84yPtVx8hOxipuJnv9CpOByQ66qp6whrh60ahev9u",
+      "createdAt": "2026-03-31T06:11:28.008Z"
     }
   ],
   "weatherFavorites": [
@@ -35,32 +42,28 @@
       "city": "Ljubljana",
       "country": "Slovenia",
       "temperatureC": 18,
-      "condition": "Cloudy",
-      "favorite": true
+      "condition": "Cloudy"
     },
     {
       "id": 2,
       "city": "Maribor",
       "country": "Slovenia",
       "temperatureC": 17,
-      "condition": "Sunny",
-      "favorite": false
+      "condition": "Sunny"
     },
     {
       "id": 3,
       "city": "Koper",
       "country": "Slovenia",
       "temperatureC": 22,
-      "condition": "Sunny",
-      "favorite": true
+      "condition": "Sunny"
     },
     {
       "id": 4,
       "city": "Celje",
       "country": "Slovenia",
       "temperatureC": 16,
-      "condition": "Rain",
-      "favorite": false
+      "condition": "Rain"
     },
     {
       "id": 5,
@@ -68,8 +71,15 @@
       "country": "Slovenia",
       "temperatureC": 21,
       "condition": "Sunny",
-      "favorite": true,
       "createdBy": "janez@test.com"
+    }
+  ],
+  "favorites": [
+    {
+      "id": 1,
+      "userEmail": "janez@test.com",
+      "weatherId": 5,
+      "createdAt": "2026-03-31T07:00:00.000Z"
     }
   ]
 }

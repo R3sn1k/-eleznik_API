@@ -11,7 +11,6 @@ const defaultData = {
       country: "Slovenia",
       temperatureC: 18,
       condition: "Cloudy",
-      favorite: true,
     },
     {
       id: 2,
@@ -19,7 +18,6 @@ const defaultData = {
       country: "Slovenia",
       temperatureC: 17,
       condition: "Sunny",
-      favorite: false,
     },
     {
       id: 3,
@@ -27,7 +25,6 @@ const defaultData = {
       country: "Slovenia",
       temperatureC: 22,
       condition: "Sunny",
-      favorite: true,
     },
     {
       id: 4,
@@ -35,9 +32,9 @@ const defaultData = {
       country: "Slovenia",
       temperatureC: 16,
       condition: "Rain",
-      favorite: false,
     }
-  ]
+  ],
+  favorites: [],
 };
 
 function ensureDb() {
@@ -48,6 +45,30 @@ function ensureDb() {
 
   if (!fs.existsSync(dbPath)) {
     fs.writeFileSync(dbPath, JSON.stringify(defaultData, null, 2));
+    return;
+  }
+
+  const raw = fs.readFileSync(dbPath, "utf8");
+  const currentData = JSON.parse(raw);
+  let changed = false;
+
+  if (!Array.isArray(currentData.users)) {
+    currentData.users = [];
+    changed = true;
+  }
+
+  if (!Array.isArray(currentData.weatherFavorites)) {
+    currentData.weatherFavorites = defaultData.weatherFavorites;
+    changed = true;
+  }
+
+  if (!Array.isArray(currentData.favorites)) {
+    currentData.favorites = [];
+    changed = true;
+  }
+
+  if (changed) {
+    fs.writeFileSync(dbPath, JSON.stringify(currentData, null, 2));
   }
 }
 

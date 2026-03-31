@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
       profile: "GET /API/GET/profile",
       weatherAll: "GET /API/GET/weather",
       weatherById: "GET /API/GET/weather/:id",
-      weatherFavorites: "GET /API/GET/weather/favorites",
+      weatherFavorites: "GET /API/GET/favorites",
     },
   });
 });
@@ -33,23 +33,46 @@ router.get("/profile", authMiddleware, (req, res) => {
 
 router.get("/weather", authMiddleware, (req, res) => {
   const db = readDb();
+  const userFavorites = new Set(
+    db.favorites
+      .filter((item) => item.userEmail === req.user.email)
+      .map((item) => item.weatherId)
+  );
+
+  const weatherData = db.weatherFavorites.map((item) => ({
+    ...item,
+    isFavorite: userFavorites.has(item.id),
+  }));
+
   res.json({
-    count: db.weatherFavorites.length,
-    data: db.weatherFavorites,
+    count: weatherData.length,
+    data: weatherData,
   });
 });
 
-router.get("/weather/favorites", authMiddleware, (req, res) => {
+router.get("/favorites", authMiddleware, (req, res) => {
   const db = readDb();
-  const favorites = db.weatherFavorites
-    .filter((item) => item.favorite)
-    .map(({ id, city, country, temperatureC, condition }) => ({
-      id,
-      city,
-      country,
-      temperatureC,
-      condition,
-    }));
+  const favorites = db.favorites
+    .filter((item) => item.userEmail === req.user.email)
+    .map((favorite) => {
+      const weatherEntry = db.weatherFavorites.find(
+        (item) => item.id === favorite.weatherId
+      );
+
+      if (!weatherEntry) {
+        return null;
+      }
+
+      return {
+        favoriteId: favorite.id,
+        weatherId: weatherEntry.id,
+        city: weatherEntry.city,
+        country: weatherEntry.country,
+        temperatureC: weatherEntry.temperatureC,
+        condition: weatherEntry.condition,
+      };
+    })
+    .filter(Boolean);
 
   res.json({
     count: favorites.length,
@@ -75,7 +98,15 @@ router.get("/weather/:id", authMiddleware, (req, res) => {
     });
   }
 
-  return res.json(entry);
+  const favorite = db.favorites.find(
+    (item) => item.userEmail === req.user.email && item.weatherId === entry.id
+  );
+
+  return res.json({
+    ...entry,
+    isFavorite: Boolean(favorite),
+    favoriteId: favorite ? favorite.id : null,
+  });
 });
 
 module.exports = router;
