@@ -1,6 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../../../middleware/auth");
 const { readDb } = require("../../../db");
+const asyncHandler = require("../../../utils/asyncHandler");
 
 const router = express.Router();
 
@@ -31,8 +32,8 @@ router.get("/profile", authMiddleware, (req, res) => {
   });
 });
 
-router.get("/weather", authMiddleware, (req, res) => {
-  const db = readDb();
+router.get("/weather", authMiddleware, asyncHandler(async (req, res) => {
+  const db = await readDb();
   const userFavorites = new Set(
     db.favorites
       .filter((item) => item.userEmail === req.user.email)
@@ -48,10 +49,10 @@ router.get("/weather", authMiddleware, (req, res) => {
     count: weatherData.length,
     data: weatherData,
   });
-});
+}));
 
-router.get("/favorites", authMiddleware, (req, res) => {
-  const db = readDb();
+router.get("/favorites", authMiddleware, asyncHandler(async (req, res) => {
+  const db = await readDb();
   const favorites = db.favorites
     .filter((item) => item.userEmail === req.user.email)
     .map((favorite) => {
@@ -78,9 +79,9 @@ router.get("/favorites", authMiddleware, (req, res) => {
     count: favorites.length,
     data: favorites,
   });
-});
+}));
 
-router.get("/weather/:id", authMiddleware, (req, res) => {
+router.get("/weather/:id", authMiddleware, asyncHandler(async (req, res) => {
   const weatherId = Number(req.params.id);
 
   if (Number.isNaN(weatherId)) {
@@ -89,7 +90,7 @@ router.get("/weather/:id", authMiddleware, (req, res) => {
     });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const entry = db.weatherFavorites.find((item) => item.id === weatherId);
 
   if (!entry) {
@@ -107,6 +108,6 @@ router.get("/weather/:id", authMiddleware, (req, res) => {
     isFavorite: Boolean(favorite),
     favoriteId: favorite ? favorite.id : null,
   });
-});
+}));
 
 module.exports = router;

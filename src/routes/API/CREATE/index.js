@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = require("../../../middleware/auth");
 const { jwtSecret } = require("../../../config");
 const { readDb, writeDb } = require("../../../db");
+const asyncHandler = require("../../../utils/asyncHandler");
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
@@ -28,7 +29,7 @@ router.post("/register", async (req, res) => {
     });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const existingUser = db.users.find(
     (user) => user.email.toLowerCase() === email.toLowerCase()
   );
@@ -49,7 +50,7 @@ router.post("/register", async (req, res) => {
   };
 
   db.users.push(newUser);
-  writeDb(db);
+  await writeDb(db);
 
   return res.status(201).json({
     message: "Registracija uspesna.",
@@ -59,9 +60,9 @@ router.post("/register", async (req, res) => {
       email: newUser.email,
     },
   });
-});
+}));
 
-router.post("/login", async (req, res) => {
+router.post("/login", asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -70,7 +71,7 @@ router.post("/login", async (req, res) => {
     });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const user = db.users.find(
     (item) => item.email.toLowerCase() === email.toLowerCase()
   );
@@ -103,9 +104,9 @@ router.post("/login", async (req, res) => {
     message: "Prijava uspesna.",
     token,
   });
-});
+}));
 
-router.post("/weather", authMiddleware, (req, res) => {
+router.post("/weather", authMiddleware, asyncHandler(async (req, res) => {
   const { city, country, temperatureC, condition } = req.body;
 
   if (!city || !country || temperatureC === undefined || !condition) {
@@ -114,7 +115,7 @@ router.post("/weather", authMiddleware, (req, res) => {
     });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const newEntry = {
     id: db.weatherFavorites.length
       ? Math.max(...db.weatherFavorites.map((item) => item.id)) + 1
@@ -127,15 +128,15 @@ router.post("/weather", authMiddleware, (req, res) => {
   };
 
   db.weatherFavorites.push(newEntry);
-  writeDb(db);
+  await writeDb(db);
 
   return res.status(201).json({
     message: "Vremenski zapis ustvarjen.",
     data: newEntry,
   });
-});
+}));
 
-router.post("/favorites", authMiddleware, (req, res) => {
+router.post("/favorites", authMiddleware, asyncHandler(async (req, res) => {
   const { weatherId } = req.body;
   const parsedWeatherId = Number(weatherId);
 
@@ -145,7 +146,7 @@ router.post("/favorites", authMiddleware, (req, res) => {
     });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const weatherEntry = db.weatherFavorites.find((item) => item.id === parsedWeatherId);
 
   if (!weatherEntry) {
@@ -174,12 +175,12 @@ router.post("/favorites", authMiddleware, (req, res) => {
   };
 
   db.favorites.push(newFavorite);
-  writeDb(db);
+  await writeDb(db);
 
   return res.status(201).json({
     message: "Kraj dodan med priljubljene.",
     data: newFavorite,
   });
-});
+}));
 
 module.exports = router;

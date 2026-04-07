@@ -9,8 +9,6 @@ const deleteRoutes = require("./routes/API/DELETE");
 
 const app = express();
 
-ensureDb();
-
 app.use(cors());
 app.use(express.json());
 
@@ -31,18 +29,34 @@ app.use("/API/CREATE", createRoutes);
 app.use("/API/UPDATE", updateRoutes);
 app.use("/API/DELETE", deleteRoutes);
 
-const server = app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+app.use((error, req, res, next) => {
+  console.error("Napaka pri obdelavi zahteve:", error);
+  res.status(500).json({
+    message: "Pri obdelavi zahteve je prislo do napake.",
+  });
 });
 
-server.on("error", (error) => {
-  if (error.code === "EADDRINUSE") {
-    console.error(
-      `Port ${port} je ze zaseden. Pozeni 'npm run start:3005' ali nastavi drug PORT.`
-    );
-    process.exit(1);
-  }
+async function start() {
+  await ensureDb();
 
-  console.error("Napaka pri zagonu streznika:", error);
+  const server = app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+
+  server.on("error", (error) => {
+    if (error.code === "EADDRINUSE") {
+      console.error(
+        `Port ${port} je ze zaseden. Pozeni 'npm run start:3005' ali nastavi drug PORT.`
+      );
+      process.exit(1);
+    }
+
+    console.error("Napaka pri zagonu streznika:", error);
+    process.exit(1);
+  });
+}
+
+start().catch((error) => {
+  console.error("Napaka pri inicializaciji baze:", error);
   process.exit(1);
 });

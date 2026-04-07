@@ -1,5 +1,27 @@
 # Zeleznik API
 
+API je preurejen tako, da je razdeljen po mapah in URL-jih, podatki pa se zdaj
+shranjujejo v Sanity Content Lake namesto v lokalni `data/db.json` datoteki.
+
+## Sanity nastavitve
+
+Projekt prebere `.env` datoteko v root mapi. Potrebne spremenljivke:
+
+```env
+SANITY_PROJECT_ID=...
+SANITY_DATASET=production
+SANITY_TOKEN=...
+SANITY_ORGANIZATION_ID=...
+SANITY_API_VERSION=2025-02-19
+JWT_SECRET=super-secret-school-project-key
+```
+
+Uporabljeni tipi dokumentov v Sanity:
+
+- `user`
+- `weatherEntry`
+- `favorite`
+
 API je preurejen tako, da je razdeljen po mapah in URL-jih:
 
 - `GET`

@@ -1,6 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../../../middleware/auth");
 const { readDb, writeDb } = require("../../../db");
+const asyncHandler = require("../../../utils/asyncHandler");
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.put("/weather/:id", authMiddleware, (req, res) => {
+router.put("/weather/:id", authMiddleware, asyncHandler(async (req, res) => {
   const weatherId = Number(req.params.id);
   const { city, country, temperatureC, condition, favorite } = req.body;
 
@@ -29,7 +30,7 @@ router.put("/weather/:id", authMiddleware, (req, res) => {
     });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const entryIndex = db.weatherFavorites.findIndex((item) => item.id === weatherId);
 
   if (entryIndex === -1) {
@@ -50,12 +51,12 @@ router.put("/weather/:id", authMiddleware, (req, res) => {
   };
 
   db.weatherFavorites[entryIndex] = updatedEntry;
-  writeDb(db);
+  await writeDb(db);
 
   return res.json({
     message: "Vremenski zapis posodobljen.",
     data: updatedEntry,
   });
-});
+}));
 
 module.exports = router;

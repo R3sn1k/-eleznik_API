@@ -34,6 +34,20 @@
       "email": "janez_novi_111@test.com",
       "passwordHash": "$2a$10$TFF/VqEx2SID84yPtVx8hOxipuJnv9CpOByQ66qp6whrh60ahev9u",
       "createdAt": "2026-03-31T06:11:28.008Z"
+    },
+    {
+      "id": 6,
+      "username": "igor",
+      "email": "igor@test.com",
+      "passwordHash": "$2a$10$MGTalpYqrzvc3dFnNtwWyeO8kAq9rOD9NYg4NcuKWYgNUU3E9KhOK",
+      "createdAt": "2026-04-06T18:24:15.052Z"
+    },
+    {
+      "id": 7,
+      "username": "sanity_1775543666",
+      "email": "sanity_1775543666@test.com",
+      "passwordHash": "$2a$10$1K6gij0B62Ny/hHPMXcBC.wAE.Cu.CC4t6Q4aeM1i.sBRb/QjDTRe",
+      "createdAt": "2026-04-07T06:34:26.915Z"
     }
   ],
   "weatherFavorites": [
@@ -72,6 +86,17 @@
       "temperatureC": 21,
       "condition": "Sunny",
       "createdBy": "janez@test.com"
+    },
+    {
+      "id": 6,
+      "city": "Polzela",
+      "country": "Slovenia",
+      "temperatureC": 21,
+      "condition": "Sunny",
+      "createdBy": "igor@test.com",
+      "favorite": false,
+      "updatedBy": "igor@test.com",
+      "updatedAt": "2026-04-06T18:49:38.928Z"
     }
   ],
   "favorites": [
